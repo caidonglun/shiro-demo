@@ -19,6 +19,7 @@ public class ShiroConfiguration {
         return myShiroRealm;
     }
 
+
     //权限管理，配置主要是Realm的管理认证
     @Bean
     public DefaultWebSecurityManager securityManager() {
