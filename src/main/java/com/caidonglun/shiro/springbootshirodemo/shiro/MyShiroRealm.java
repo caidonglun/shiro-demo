@@ -42,7 +42,7 @@ public class MyShiroRealm extends AuthorizingRealm {
                 //添加权限
 //                simpleAuthorizationInfo.addStringPermission(permission.getPermission());
 
-        simpleAuthorizationInfo.addStringPermission("user");
+        simpleAuthorizationInfo.addStringPermission("user:select");
 
 //            }
 //        }
