@@ -1,16 +1,21 @@
 package com.caidonglun.shiro.springbootshirodemo.controller;
 
+import com.alibaba.druid.util.Utils;
 import com.caidonglun.shiro.springbootshirodemo.entity.Student;
 import com.caidonglun.shiro.springbootshirodemo.service.StudentService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.codec.Base64;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
+import org.apache.tomcat.util.security.MD5Encoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,6 +33,12 @@ public class StudentController {
 
     @RequestMapping("loginService")
     public String login(String username, String password, HttpServletResponse response) throws IOException {
+        String caidonglun = Base64.encodeToString("123456".getBytes());
+        Md5Hash md5Hash=new Md5Hash("123456","caidonglun",1);
+        logger.info("Md5Hash:"+md5Hash);
+        logger.info("Base64:"+caidonglun);
+
+
         logger.info("user="+username+" "+"password="+password);
         if(username!=null||password!=null) {
             Subject subject = SecurityUtils.getSubject();
