@@ -11,12 +11,16 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 
 //实现AuthorizingRealm接口用户用户认证
 public class MyShiroRealm extends AuthorizingRealm {
 
     Logger logger=LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    ApplicationContext applicationContext;
 
     //用于用户查询
     @Autowired
@@ -32,7 +36,14 @@ public class MyShiroRealm extends AuthorizingRealm {
         //查询用户名称
         Student user = loginService.findStudent(name);
         //添加角色和权限
-        SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
+//        SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
+
+        String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
+        for(int i=0;i<beanDefinitionNames.length;i++)
+        logger.info("beanName:"+beanDefinitionNames[i]);
+
+        SimpleAuthorizationInfo simpleAuthorizationInfo= (SimpleAuthorizationInfo) applicationContext.getBean("getSimpleAuthorizationInfo");
+
 //        for (Role role:user.getRoles()) {
             //添加角色
 //            simpleAuthorizationInfo.addRole(role.getRoleName());
@@ -84,6 +95,7 @@ public class MyShiroRealm extends AuthorizingRealm {
         } else {
             //这里验证authenticationToken和simpleAuthenticationInfo的信息
             SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(name, user.getPassword(), this.getClass().getName());
+
 //            这里不用我们自己去验证用户是否正确，只需要将从数据库获取出来的正确账户放入SimpleAuthenticationInfo
             logger.info("验证中！");
             return simpleAuthenticationInfo;
