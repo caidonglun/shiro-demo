@@ -62,6 +62,7 @@ public class MyShiroRealm extends AuthorizingRealm {
 //            return null;
 //        }
 
+
         String username = usernamePasswordToken.getUsername();
         logger.info("用户名字为："+username);
         if(username==null||username==""){
