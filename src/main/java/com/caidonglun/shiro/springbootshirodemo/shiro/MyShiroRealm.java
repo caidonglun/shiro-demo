@@ -1,5 +1,6 @@
 package com.caidonglun.shiro.springbootshirodemo.shiro;
 
+import com.caidonglun.shiro.springbootshirodemo.entity.Permission;
 import com.caidonglun.shiro.springbootshirodemo.entity.Student;
 import com.caidonglun.shiro.springbootshirodemo.service.StudentService;
 import org.apache.shiro.authc.*;
@@ -27,7 +28,7 @@ public class MyShiroRealm extends AuthorizingRealm {
         //获取登录用户名
         String name= (String) principalCollection.getPrimaryPrincipal();
 
-        logger.info("用于用户查询！");
+        logger.info("用于权限查询！");
         //查询用户名称
         Student user = loginService.findStudent(name);
         //添加角色和权限
@@ -36,17 +37,19 @@ public class MyShiroRealm extends AuthorizingRealm {
             //添加角色
 //            simpleAuthorizationInfo.addRole(role.getRoleName());
 
-        simpleAuthorizationInfo.addRole("user");
+        Permission permission = loginService.finRoleAndPermission(name);
+        logger.info("permission="+permission.toString());
+        simpleAuthorizationInfo.addRole(permission.getRoleName());
 
 //            for (Permission permission:role.getPermissions()) {
                 //添加权限
 //                simpleAuthorizationInfo.addStringPermission(permission.getPermission());
 
-        simpleAuthorizationInfo.addStringPermission("user:select");
+        simpleAuthorizationInfo.addStringPermission(permission.getPermissionName());
 
 //            }
 //        }
-        logger.info("数据执行挖完成"+String.valueOf(simpleAuthorizationInfo.getStringPermissions()));
+        logger.info("数据执行挖完成"+String.valueOf(simpleAuthorizationInfo.getStringPermissions()+""+simpleAuthorizationInfo.getRoles()));
         return simpleAuthorizationInfo;
     }
 

@@ -44,9 +44,12 @@ public class ShiroConfiguration {
         shiroFilterFactoryBean.setSuccessUrl("/index.html");
         //未授权页面
         shiroFilterFactoryBean.setUnauthorizedUrl("/403.html");
+//        设置了anon的是不需要认证的。
         map.put("/login.html","anon");
         map.put("/loginService","anon");
         map.put("/error.html","anon");
+//        这是需要roles中admin角色的权限才能进入页面。
+        map.put("/permission.html","roles[admin]");
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
         return shiroFilterFactoryBean;
