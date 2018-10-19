@@ -1,12 +1,15 @@
 package com.caidonglun.shiro.springbootshirodemo.controller;
 
-import com.alibaba.druid.util.Utils;
 import com.caidonglun.shiro.springbootshirodemo.entity.Student;
 import com.caidonglun.shiro.springbootshirodemo.service.StudentService;
+import com.google.code.kaptcha.impl.DefaultKaptcha;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.cache.Cache;
+import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
@@ -18,8 +21,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -28,6 +37,10 @@ public class StudentController {
     Logger logger=LoggerFactory.getLogger(getClass());
     @Autowired
     StudentService studentService;
+    @Autowired
+    CacheManager cacheManager;
+    @Autowired
+    DefaultKaptcha defaultKaptcha;
 
 
     @RequestMapping("loginService")
@@ -75,10 +88,13 @@ public class StudentController {
 
     //登出
     @RequestMapping(value = "/logout")
-    public String logout(){
+    public String logout(HttpServletResponse response) throws IOException {
         Subject subject = SecurityUtils.getSubject();
+        logger.info("登出了！");
+        if(subject.getPrincipal()==null){
+            response.sendRedirect("index");
+        }
         subject.logout();
-
         return "logout";
     }
 
@@ -112,7 +128,63 @@ public class StudentController {
     }
 
 
+    @RequestMapping("/defaultKaptcha")
+    public void defaultKaptcha(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception{
+        byte[] captchaChallengeAsJpeg = null;
+        ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
+        try {
+            //生产验证码字符串并保存到session中
+            String createText = defaultKaptcha.createText();
+            httpServletRequest.getSession().setAttribute("vrifyCode", createText);
+            //使用生产的验证码字符串返回一个BufferedImage对象并转为byte写入到byte数组中
+            BufferedImage challenge = defaultKaptcha.createImage(createText);
+            ImageIO.write(challenge, "jpg", jpegOutputStream);
+        } catch (IllegalArgumentException e) {
+            httpServletResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
 
-//
+        //定义response输出类型为image/jpeg类型，使用response输出流输出图片的byte数组
+        captchaChallengeAsJpeg = jpegOutputStream.toByteArray();
+        httpServletResponse.setHeader("Cache-Control", "no-store");
+        httpServletResponse.setHeader("Pragma", "no-cache");
+        httpServletResponse.setDateHeader("Expires", 0);
+        httpServletResponse.setContentType("image/jpeg");
+        ServletOutputStream responseOutputStream =
+                httpServletResponse.getOutputStream();
+        responseOutputStream.write(captchaChallengeAsJpeg);
+        responseOutputStream.flush();
+        responseOutputStream.close();
+    }
 
+    @RequestMapping("/imgvrifyControllerDefaultKaptcha")
+    public String imgvrifyControllerDefaultKaptcha(HttpServletRequest request, HttpServletResponse response) {
+        String captchaId = (String) request.getSession().getAttribute("vrifyCode");
+        String parameter = request.getParameter("vrifyCode");
+//        大小写必须严格填写。
+        System.out.println("生成的验证码为：" + captchaId + "输入的验证码为：" + parameter);
+        System.out.println("Session  vrifyCode " + captchaId + " form vrifyCode " + parameter);
+
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        Subject subject = SecurityUtils.getSubject();
+        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(username, password);
+        try {
+            captchaId = captchaId.toUpperCase();
+            parameter = parameter.toUpperCase();
+            subject.login(usernamePasswordToken);
+            if (!captchaId.equals(parameter)) {
+                logger.info("错误的验证码");
+                return ("login");
+            } else {
+                logger.info("登录成功");
+                response.sendRedirect("index");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.info("用户名或密码错误！");
+            return ("login");
+        }
+        return "login";
+    }
 }

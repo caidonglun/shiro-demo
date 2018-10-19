@@ -38,11 +38,12 @@ public class MyShiroRealm extends AuthorizingRealm {
         //添加角色和权限
 //        SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
 
-        String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
-        for(int i=0;i<beanDefinitionNames.length;i++)
-        logger.info("beanName:"+beanDefinitionNames[i]);
+//        获取所有bean
+//        String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
+//        for(int i=0;i<beanDefinitionNames.length;i++)
+//        logger.info("beanName:"+beanDefinitionNames[i]);
 
-        SimpleAuthorizationInfo simpleAuthorizationInfo= (SimpleAuthorizationInfo) applicationContext.getBean("getSimpleAuthorizationInfo");
+        SimpleAuthorizationInfo simpleAuthorizationInfo= new SimpleAuthorizationInfo();
 
 //        for (Role role:user.getRoles()) {
             //添加角色

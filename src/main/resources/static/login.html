@@ -5,9 +5,11 @@
     <title>Title</title>
 </head>
 <body>
-<form action="/loginService" method="post">
+<form action="/imgvrifyControllerDefaultKaptcha" method="post">
     <input type="text" name="username">
     <input type="password" name="password">
+    <img alt="验证码" onclick = "this.src='/defaultKaptcha?d='+new Date()*1" src="/defaultKaptcha" />
+    <input type="text" name="vrifyCode" />
     <input type="submit" value="提交">
 </form>
 </body>
