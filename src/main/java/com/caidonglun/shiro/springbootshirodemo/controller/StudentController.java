@@ -42,7 +42,6 @@ public class StudentController {
     @Autowired
     DefaultKaptcha defaultKaptcha;
 
-
     @RequestMapping("loginService")
     public String login(String username, String password, HttpServletResponse response) throws IOException {
         String caidonglun = Base64.encodeToString("123456".getBytes());
