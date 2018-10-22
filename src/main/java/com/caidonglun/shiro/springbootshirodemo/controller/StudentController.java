@@ -204,7 +204,7 @@ public class StudentController {
 
     }
 
-
+//鲁大师测试文件暂时删除。
     @RequestMapping("/cai.exe")
     public void downloadFile(HttpServletResponse resp) throws IOException {
         String fileName = ResourceUtils.getURL("classpath:").getPath() + "static/ludashisetup.exe";
