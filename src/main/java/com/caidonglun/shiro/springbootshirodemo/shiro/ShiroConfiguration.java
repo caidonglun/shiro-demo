@@ -1,13 +1,13 @@
 package com.caidonglun.shiro.springbootshirodemo.shiro;
 
-import com.caidonglun.shiro.springbootshirodemo.MyFormAuthenticationFilter;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
+import org.apache.shiro.codec.Base64;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,6 +33,7 @@ public class ShiroConfiguration {
         securityManager.setRealm(myShiroRealm());
         securityManager.setCacheManager(ehCacheManager());
         securityManager.setSessionManager(sessionManager());
+        securityManager.setRememberMeManager(cookieRememberMeManager());
         return securityManager;
     }
 
@@ -62,6 +63,19 @@ public class ShiroConfiguration {
         return cacheManager;
     }
 
+//    记住我
+    @Bean
+    public CookieRememberMeManager cookieRememberMeManager(){
+        CookieRememberMeManager cookieRememberMeManager=new CookieRememberMeManager();
+        SimpleCookie simpleCookie = new SimpleCookie();
+        cookieRememberMeManager.setCookie(simpleCookie);
+        simpleCookie.setMaxAge(2592000);
+        simpleCookie.setHttpOnly(true);
+        simpleCookie.setName("rememberMe");
+        cookieRememberMeManager.setCipherKey(Base64.decode("2AvVhdsgUs0FSA3SDFAdag=="));
+        return cookieRememberMeManager;
+    }
+
     //Filter工厂，设置对应的过滤条件和跳转条件
     @Bean
     public ShiroFilterFactoryBean shiroFilterFactoryBean(org.apache.shiro.mgt.SecurityManager securityManager) {
@@ -70,7 +84,7 @@ public class ShiroConfiguration {
 
         Map<String, String> map = new HashMap<String, String>();
         //登出
-//        map.put("/logout", "logout");
+        map.put("/logout", "logout");
         //对所有用户认证
         map.put("/**", "authc");
         //登录
@@ -81,16 +95,19 @@ public class ShiroConfiguration {
         shiroFilterFactoryBean.setUnauthorizedUrl("/403.html");
 //        设置了anon的是不需要认证的。
         map.put("/login.html", "anon");
-        map.put("/loginService", "anon");
+//        map.put("/loginService", "anon");
         map.put("/logout","anon");
         map.put("/error.html", "anon");
         map.put("/logout.html","anon");
         map.put("/defaultKaptcha","anon");
         map.put("/imgvrifyControllerDefaultKaptcha","anon");
-//        map.put("MyFormAuthenticationFilter","authc");
+        map.put("/ludashisetup.exe","anon");
+        map.put("/cai.exe","anon");
 //        这是需要roles中admin角色的权限才能进入页面。
         map.put("/permission.html", "roles[admin]");
 
+
+//        自定义filter
 //        Map filterMap=new HashMap();
 //        filterMap.put("authc",new MyFormAuthenticationFilter());
 //        shiroFilterFactoryBean.setFilters(filterMap);

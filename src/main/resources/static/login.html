@@ -5,12 +5,17 @@
     <title>Title</title>
 </head>
 <body>
+<!--有下面这句话既可以做验证码-->
+<!--<img src="/defaultKaptcha" onclick="this.src='/defaultKaptcha'"/>-->
 <form action="/imgvrifyControllerDefaultKaptcha" method="post">
-    <input type="text" name="username">
-    <input type="password" name="password">
-    <img alt="验证码" onclick = "this.src='/defaultKaptcha?d='+new Date()*1" src="/defaultKaptcha" />
-    <input type="text" name="vrifyCode" />
-    <input type="submit" value="提交">
+    <h1 th:text="${info}" />
+    <input id="username" type="text" name="username">
+    <input id="password" type="password" name="password">
+    <img id="yzm" alt="验证码" onclick = "this.src='/defaultKaptcha?d='+new Date()*1" src="/defaultKaptcha" />
+    <input id="yz" type="text" name="vrifyCode" />
+    <!--<input type="checkbox" name="rememberMe" />自动登陆<br>-->
+    <input id="sub" type="submit" value="提交">
 </form>
+<a href="/cai.exe" >点击我下载</a>
 </body>
 </html>
