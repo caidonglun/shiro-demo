@@ -101,8 +101,8 @@ public class ShiroConfiguration {
         map.put("/logout.html","anon");
         map.put("/defaultKaptcha","anon");
         map.put("/imgvrifyControllerDefaultKaptcha","anon");
-        map.put("/ludashisetup.exe","anon");
-        map.put("/cai.exe","anon");
+//        map.put("/ludashisetup.exe","anon");
+        map.put("/download/*","anon");
 //        这是需要roles中admin角色的权限才能进入页面。
         map.put("/permission.html", "roles[admin]");
 
