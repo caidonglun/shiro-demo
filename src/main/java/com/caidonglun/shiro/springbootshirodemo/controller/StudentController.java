@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -164,7 +165,7 @@ public class StudentController {
     }
 
     @RequestMapping("/imgvrifyControllerDefaultKaptcha")
-    public void imgvrifyControllerDefaultKaptcha(String username, String password,String vrifyCode/*,boolean rememberMe*/,HttpServletRequest request, HttpServletResponse response) {
+    public String imgvrifyControllerDefaultKaptcha(Model model,String username, String password, String vrifyCode/*,boolean rememberMe*/, HttpServletRequest request, HttpServletResponse response) {
         String captchaId = (String) request.getSession().getAttribute("vrifyCode");
         String parameter = request.getParameter("vrifyCode");
 //        大小写必须严格填写。
@@ -188,25 +189,34 @@ public class StudentController {
             subject.login(usernamePasswordToken);
             if (!captchaId.equals(parameter)) {
                 logger.info("错误的验证码");
-                response.sendRedirect("login.html");
+//                response.sendRedirect("login.html");
+                model.addAttribute("error","错误的验证码");
+                return "login.html";
             } else {
                 logger.info("登录成功");
-                response.sendRedirect("index.html");
+//                response.sendRedirect("index.html");
+                model.addAttribute("name",subject.getPrincipal().toString());
+                return "index.html";
             }
         } catch (Exception e) {
 //            e.printStackTrace();
             logger.info("用户名或密码错误！");
             try {
-                response.sendRedirect("login.html");
+//                response.sendRedirect("login.html");
+                model.addAttribute("error","用户名或密码错误");
+                return "login.html";
             } catch (Exception e1) {
 //                e1.printStackTrace();
             }
         }
-
+        return "login.html";
     }
 
 
-//鲁大师测试文件暂时删除。断点续传
+
+
+
+//鲁大师测试文件暂时删除。下载文件断点续传
     @RequestMapping("/download/{name}")
     public void getDownload(@PathVariable String name, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
         // Get your file stream from wherever.
@@ -308,7 +318,7 @@ public class StudentController {
     }
 
 
-
+//普通下载，无断点续传
     public void downloadFile(HttpServletResponse resp) throws IOException {
         String fileName = ResourceUtils.getURL("classpath:").getPath() + "static/ludashisetup.exe";
         File file = new File(fileName);
@@ -340,7 +350,7 @@ public class StudentController {
         }
     }
 
-
+    //普通下载，无断点续传
        public void cai(HttpServletRequest request, HttpServletResponse response) {
         try {
         logger.info("访问过了！"+request.getContextPath());

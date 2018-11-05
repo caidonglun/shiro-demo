@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="webuploader/jquery.js"></script>
+    <script type="text/javascript" src="webuploader/md5.js"></script>
+</head>
+<body>
+<form id="fff" method="POST" enctype="multipart/form-data"
+      action="/uploadTest">
+    <p>文件2：<input id="file" type="file" name="file" multiple="multiple" /></p>
+    <p><button id="sss" type="button">上传</button></p>
+</form>
+<div id="div"></div>
+
+<script type="text/javascript">
+
+    var input = document.getElementById('file');
+    input.addEventListener("change", function (ev) {
+        console.log("开始"+this.files.length)
+        for (var i=0;i<this.files.length;i++){
+            $("#div").append("<p>"+this.files[i].name+"</p>")
+            console.log("大小："+this.files[i].size)
+        }
+
+        console.log("执行了");
+     var file = this.files[0];
+                // $.ajax({
+                //     url: '/uploadTest',
+                //     type: 'POST',
+                //     cache: false,
+                //     data: new FormData().append("file",$('#file')[0].files[0]),
+                //     // data: formdata,
+                //     data_type:"json",
+                //     processData: false,
+                //     contentType: false,
+                //     success:function (data) {
+                //         console.log("成功"+data);
+                //     },
+                //     error:function () {
+                //         console.log("失败");
+                //     },
+                //     sync:false
+                // })
+    });
+
+    $("#sss").click(function () {
+        $("#fff").submit();
+    });
+</script>
+</body>
+</html>
